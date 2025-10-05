@@ -49,3 +49,37 @@ FROM employee;
 
 INSERT INTO employee (first_name, last_name, salary)
 VALUES ('Dzmitry', 'Nikitin', 12000);
+
+
+SELECT id,
+       first_name AS f_name,
+       last_name,
+       salary
+FROM employee
+WHERE salary > 1200
+  AND first_name != 'Ivan' --filtracja
+--WHERE salary BETWEEN 1000 AND 1500 -- pomiedzy tym a tym
+--WHERE salary IN (1000, 1500, 2000) -- SALARY = TYM WARTOSCIOM
+ORDER BY salary;
+
+
+SELECT id,
+       first_name AS f_name,
+       last_name,
+       salary
+FROM employee
+WHERE first_name LIKE 'Iv%'
+  AND last_name ILIKE '%ov' --imie zaczyna sie z Iv a nazwisko konczy sie na ov
+ORDER BY salary;
+
+SELECT sum(salary) --avg(average), min, max
+--upper/lower(first_name)
+FROM employee;
+
+SELECT count(*) --LICZY ILOSC LINIJEK W TABELE
+FROM employee;
+
+
+SELECT concat(first_name, ' ', last_name) AS fio --połaczenie kilka kolumn
+    --lub to samo co first_name || ' ' last_name AS fio
+FROM employee
