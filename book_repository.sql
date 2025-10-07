@@ -43,11 +43,59 @@ VALUES ('1984', 1949, 328, 1),
        ('Murder on the Orient Express', 1934, 256, 6),
        ('And Then There Were None', 1939, 272, 6);
 
-SELECT name,
-       year,
-       (SELECT concat(a.last_name, ', ', a.first_name) FROM authors AS a WHERE a.id = author_id)
+SELECT name                                                                                      AS book_title,
+       year                                                                                      AS publication_year,
+       (SELECT concat(a.last_name, ', ', a.first_name) FROM authors AS a WHERE a.id = author_id) AS author_name
 FROM books
 ORDER BY year;
 
 
 
+SELECT b.name                              AS book_title,
+       b.year                              AS publication_year,
+       a.last_name || ', ' || a.first_name AS author_name
+FROM books AS b,
+     authors AS a
+WHERE b.author_id = a.id
+ORDER BY year;
+
+SELECT b.name                              AS book_title,
+       b.year                              AS publication_year,
+       a.last_name || ', ' || a.first_name AS author_name
+FROM books AS b,
+     authors AS a
+WHERE b.author_id = a.id
+ORDER BY year DESC;
+
+
+SELECT count(*)
+FROM books AS b
+WHERE (SELECT a.id FROM authors AS a WHERE a.last_name = 'Rowling') = b.author_id;
+
+SELECT *
+FROM books
+WHERE pages_amount > (SELECT avg(pages_amount) FROM books);
+
+SELECT name,
+       year,
+       pages_amount,
+       (SELECT avg(pages_amount)
+        FROM (SELECT *
+              FROM books
+              ORDER BY year
+              LIMIT 5) AS temp)
+FROM (SELECT *
+      FROM books
+      ORDER BY year
+      LIMIT 5) AS temp;
+
+--WITH generuje tymczasowa tabele z ktorej robie sie SELECT
+WITH oldest_books AS (SELECT *
+                      FROM books
+                      ORDER BY year
+                      LIMIT 5)
+SELECT name,
+       year,
+       pages_amount,
+       (SELECT AVG(pages_amount) FROM oldest_books) AS avg_pages
+FROM oldest_books;
