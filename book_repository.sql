@@ -89,6 +89,7 @@ FROM (SELECT *
       ORDER BY year
       LIMIT 5) AS temp;
 
+
 --WITH generuje tymczasowa tabele z ktorej robie sie SELECT
 WITH oldest_books AS (SELECT *
                       FROM books
@@ -99,3 +100,14 @@ SELECT name,
        pages_amount,
        (SELECT AVG(pages_amount) FROM oldest_books) AS avg_pages
 FROM oldest_books;
+
+UPDATE books
+SET pages_amount = 500
+WHERE name LIKE 'Anim%'
+RETURNING *;
+
+DELETE FROM authors
+WHERE id = (
+
+    )
+RETURNING *;
