@@ -217,3 +217,15 @@ FROM company_2 c --left join oznacza, ze wszystkie wpisy z lewej tablicy (c) maj
 -- LEFT OUTER JOIN (left join oznacza, ze wszystkie wpisy z lewej tablicy (c) mają sie pojawic w wyniku selectu)
 -- RIGHT OUTER JOIN (odwrotnie, tylko po prawej)
 -- FULL JOIN (połączenie LEFT + RIGHT)
+
+
+SELECT company_2.name,
+       count(e.id)
+FROM company_2
+LEFT JOIN employee e on company_2.id = e.company_id
+GROUP BY company_2.id
+HAVING count(e.id) < 2;
+-- Wynik uzyskany z połączenia company oraz pracownikow nalezących do tej company
+-- Pogrupuj po company_id i policz ilosc pracownikow w kazdej grupie (GROUP BY)
+-- Wybierz te grupy w ktorych liczna pracownikow < 2 (HAVING)
+
