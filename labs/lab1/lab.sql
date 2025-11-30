@@ -1,3 +1,6 @@
+set search_path to public, siatkowka;
+
+
 select nazwa, opis
 from czekoladki;
 

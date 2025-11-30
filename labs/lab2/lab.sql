@@ -1,10 +1,12 @@
 SET search_path TO public, siatkowka;
-
+-----------------ZADANIE 1 ------------------
+--1.1 wyświetla listę klientów (nazwa, ulica, miejscowość) posortowaną według nazw klientów
 SELECT nazwa, ulica, miejscowosc
 FROM klienci
 ORDER BY nazwa;
 
-
+--1.2 wyświetla listę klientów posortowaną malejąco według nazw miejscowości,
+-- a w ramach tej samej miejscowości rosnąco według nazw klientów
 SELECT nazwa, ulica, miejscowosc
 FROM klienci
 ORDER BY miejscowosc DESC, nazwa;
@@ -121,6 +123,10 @@ from siatkarki
 
 select *
 from wystepy;
+
+select imie, nazwisko, iddruzyny, pozycja, idmeczu, punkty, asy, bloki
+from wystepy
+where punkty between 10 and  15 and bloki = 0;
 
 -- a between x and y ≡ a >= x and a <= y
 -- a not between x and y ≡ a < x or a > y
