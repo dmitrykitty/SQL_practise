@@ -215,6 +215,8 @@ from czekoladki
 where czekolada in ('biała', 'mleczna')
   and nadzienie is null;
 
+--=================================================
+
 --6 Napisz zapytanie w języku SQL, które wyświetli informacje na temat czekoladek
 -- (idCzekoladki, nazwa, masa, koszt), których:
 
@@ -250,6 +252,8 @@ from czekoladki
 where masa between 25 and 35
   and koszt not between 0.15 and 0.24
   and koszt not between 0.25 and 0.35;
+
+--=================================================
 
 --7 Wykonaj poniższą instrukcję dodającą do Twojej bazy widok wystepy.
 --o joinach troche pozniej w lab4
@@ -291,6 +295,8 @@ where bloki > (punkty / 2);
 select imie, nazwisko, iddruzyny, pozycja, punkty, asy, bloki
 from wystepy
 where bloki + asy > punkty / 2;
+
+--=================================================
 
 --8 Wykonaj poniższą instrukcję dodającą do Twojej bazy widok mvp.
 create view mvp as
