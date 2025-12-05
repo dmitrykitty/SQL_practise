@@ -259,8 +259,7 @@ except
  union all
  select idczekoladki, nazwa, masa, koszt
  from czekoladki
- where koszt between 0.29 and 0.35
-);
+ where koszt between 0.29 and 0.35);
 
 --czy warto stosowac tutaj działań na zbiorach? nie, tylko w ramach zadania...
 SELECT idczekoladki, nazwa, masa, koszt
@@ -270,3 +269,187 @@ WHERE masa BETWEEN 25 AND 35
   AND koszt NOT BETWEEN 0.29 AND 0.35;
 
 --================================================================
+
+--5 Korzystając z operatorów UNION, INTERSECT, EXCEPT napisz zapytanie w języku SQL wyświetlające:
+
+--5.1 identyfikatory klientów, którzy nigdy nie złożyli żadnego zamówienia,
+select idklienta
+from klienci
+except
+select distinct idklienta
+from zamowienia;
+
+--5.2 identyfikatory pudełek, które nigdy nie zostały zamówione,
+select idpudelka
+from pudelka
+except
+select distinct idpudelka
+from artykuly;
+
+--5.3 nazwy klientów, czekoladek i pudełek, które zawierają rz (lub Rz),
+select nazwa
+from klienci
+where nazwa ilike '%rz%'
+union
+select nazwa
+from czekoladki
+where nazwa ilike '%rz%'
+union
+select nazwa
+from pudelka
+where nazwa ilike '%rz%';
+
+--5.4 identyfikatory czekoladek, które nie występują w żadnym pudełku.
+select idczekoladki
+from czekoladki
+except
+select idczekoladki
+from zawartosc;
+
+--===================================================
+
+--6 Napisz zapytanie w języku SQL wyświetlające:
+
+--6.1 identyfikator meczu, sumę punktów zdobytych przez gospodarzy i sumę punktów zdobytych przez gości,
+--coalesce omowiono w porzednej lab
+select idmeczu,
+       gospodarze[1] + gospodarze[2] + gospodarze[3] + coalesce(gospodarze[4], 0) + coalesce(gospodarze[5], 0) gospod,
+       goscie[1] + goscie[2] + goscie[3] + coalesce(goscie[4], 0) + coalesce(goscie[5], 0)                     goscie
+from statystyki;
+
+--6.2 identyfikator meczu, sumę punktów zdobytych przez gospodarzy i sumę punktów zdobytych przez gości,
+-- dla meczów, które skończyły się po 5 setach i zwycięzca ostatniego seta zdobył w nim ponad 15 punktów,
+select idmeczu,
+       gospodarze[1] + gospodarze[2] + gospodarze[3] + gospodarze[4] + gospodarze[5] gospod,
+       goscie[1] + goscie[2] + goscie[3] + goscie[4] + goscie[5]                     goscie
+from statystyki
+where array_length(gospodarze, 1) = 5
+  and (goscie[5] > 15 or gospodarze[5] > 15);
+
+--6.3 identyfikator i wynik meczu w formacie x:y, np. 3:1 (wynik jest pojedynczą kolumną – napisem),
+--nie zbyt przyjemnie to sie pisało, mozna było osobno policzyc case dla gosp i case dla goscie
+select help.idmeczu, help.gospod || ':' || help.total - help.gospod wynik
+from (select idmeczu,
+             (case when (goscie[1] < gospodarze[1]) then 1 else 0 end +
+              case when (goscie[2] < gospodarze[2]) then 1 else 0 end +
+              case when (goscie[3] < gospodarze[3]) then 1 else 0 end +
+              case when (goscie[4] < gospodarze[4]) then 1 else 0 end +
+              case when (goscie[5] < gospodarze[5]) then 1 else 0 end) gospod,
+             array_length(gospodarze, 1)                               total
+      from statystyki) help;
+
+--6.4 identyfikator meczu, sumę punktów zdobytych przez gospodarzy i sumę punktów zdobytych przez gości,
+-- dla meczów, w których gospodarze zdobyli ponad 100 punktów,
+select help.idmeczu, help.gospod, help.goscie
+from (select idmeczu,
+             gospodarze[1] + gospodarze[2] + gospodarze[3] + coalesce(gospodarze[4], 0) +
+             coalesce(gospodarze[5], 0)                                                          gospod,
+             goscie[1] + goscie[2] + goscie[3] + coalesce(goscie[4], 0) + coalesce(goscie[5], 0) goscie
+      from statystyki) help
+where gospod > 100;
+
+--6.5 identyfikator meczu, liczbę punktów zdobytych przez gospodarzy w pierwszym secie,
+-- sumę punktów zdobytych w meczu przez gospodarzy, dla meczów,
+-- w których pierwiastek kwadratowy z liczby punktów zdobytych przez gospodarzy w pierwszym secie jest mniejszy
+-- niż logarytm o podstawie 2 z sumy punktów zdobytych w meczu przez gospodarzy. ;)
+
+select help.idmeczu, help.gosp_first, help.gosp_sum
+from (select idmeczu,
+             gospodarze[1]              gosp_first,
+             gospodarze[1] + gospodarze[2] + gospodarze[3] + coalesce(gospodarze[4], 0) +
+             coalesce(gospodarze[5], 0) gosp_sum
+      from statystyki) help
+where sqrt(help.gosp_first) < log(2, help.gosp_sum);
+
+--troche bardziej czytelne chyba
+with statystyki_new as (select idmeczu,
+                               gospodarze[1]              gosp_first,
+                               gospodarze[1] + gospodarze[2] + gospodarze[3] + coalesce(gospodarze[4], 0) +
+                               coalesce(gospodarze[5], 0) gosp_sum
+                        from statystyki)
+select idmeczu, gosp_first, gosp_sum
+from statystyki_new
+where sqrt(gosp_first) < log(2, gosp_sum);
+
+--=========================================================
+
+--7 Korzystając z widoku wystepy (patrz zadanie 2.7) i ewentualnie tabeli siatkarki oraz operatorów UNION, INTERSECT,
+-- EXCEPT napisz zapytanie w języku SQL wyświetlające imię, nazwisko,
+-- identyfikator drużyny i pozycję na boisku dla zawodniczek, które:
+
+--7.1 były w składzie drużyn, ale nie zagrały w żadnym meczu,
+select imie, nazwisko, iddruzyny, pozycja
+from siatkarki
+except
+select imie, nazwisko, iddruzyny, pozycja
+from wystepy;
+
+--7.2 grają nominalnie na pozycji libero, ale w co najmniej jednym meczu wystąpiły na innej pozycji,
+select imie, nazwisko, iddruzyny, pozycja
+from siatkarki
+where pozycja = 'libero'
+intersect
+select imie, nazwisko, iddruzyny, 'libero'
+from wystepy
+where pozycja <> 'libero';
+
+--7.3 grają nominalnie na pozycji libero i żadnym meczu nie wystąpiły na innej pozycji,
+select imie, nazwisko, iddruzyny, pozycja
+from siatkarki
+where pozycja = 'libero'
+except
+select imie, nazwisko, iddruzyny, 'libero'
+from wystepy
+where pozycja <> 'libero';
+
+--7.4 nie grają nominalnie na pozycji libero, ale w co najmniej jednym meczu wystąpiły na tej pozycji,
+select imie, nazwisko, iddruzyny, pozycja
+from siatkarki
+where (numer, iddruzyny) in (select numer, iddruzyny
+                             from siatkarki
+                             where pozycja <> 'libero'
+                             intersect
+                             select numer, iddruzyny
+                             from wystepy
+                             where pozycja = 'libero');
+
+--=================================================================
+
+--8 Korzystając z widoku mvp (patrz zadanie 2.8) i ewentualnie tabeli siatkarki oraz operatorów
+-- UNION, INTERSECT, EXCEPT napisz zapytanie w języku SQL wyświetlające
+-- imię, nazwisko, identyfikator drużyny i pozycję na boisku dla zawodniczek, które:
+
+--8.1 nigdy nie zostały MVP,
+select imie, nazwisko, iddruzyny, pozycja
+from siatkarki
+except
+select imie, nazwisko, iddruzyny, pozycja
+from mvp;
+
+--8.2zostały MVP w meczu, który skończył się po 3 setach i w meczu,
+-- który skończył się po 4 setach i w meczu, który skończył się po 5 setach,
+select imie, nazwisko, iddruzyny, pozycja
+from mvp
+where array_length(gospodarze, 1) = 3
+intersect
+select imie, nazwisko, iddruzyny, pozycja
+from mvp
+where array_length(gospodarze, 1) = 4
+intersect
+select imie, nazwisko, iddruzyny, pozycja
+from mvp
+where array_length(gospodarze, 1) = 5;
+
+--8.3 zostały co najmniej raz MVP, ale nigdy w meczu, który wygrali gospodarze
+select imie, nazwisko, iddruzyny, pozycja
+from mvp
+except
+select imie, nazwisko, iddruzyny, pozycja
+from mvp
+where case when (goscie[1] < gospodarze[1]) then 1 else 0 end +
+      case when (goscie[2] < gospodarze[2]) then 1 else 0 end +
+      case when (goscie[3] < gospodarze[3]) then 1 else 0 end +
+      case when (goscie[4] < gospodarze[4]) then 1 else 0 end +
+      case when (goscie[5] < gospodarze[5]) then 1 else 0 end >= 3;
+
+--ostatnie dwa juzmi sie nie chce robic. Idziemy do joinow!!!
