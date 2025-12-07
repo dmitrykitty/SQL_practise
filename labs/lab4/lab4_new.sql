@@ -2,12 +2,12 @@ set search_path to public, siatkowka;
 --====================THEORY====================
 --cross join (iloczyn kartezjanski)
 
---a join b on a.key=bkey
---a join b using(key)
---a naturall join b
+--a join b on a.key=bkey --> w wyniku będzie dwie jednakowe kolumny z kluczami |a.key | b.key|
+--a join b using(key) --> będzie jedna kolumna |key|
+--a naturall join b --> tutaj tez w wyniku tylko jedna bez dublowania
 
 --a left join b on a.key=b.key - wszystkie rekordy z lewej i tylko wybrane s prawej
---a left join b on a.key=b.key where b.key is null - np klienci(a) ktore nigdy nie zlozyli zamowien(b)
+--a left join b on a.key=b.key where b.key is null - np klienci(a) ktore nigdy nie zlozyli zamowien(b) ANTIJOIN
 --a left join b on a.key=b.key AND b.key=... -mozna dodac warunek w on, to jest nie to samo, co where
 
 --with help as (select ...) select ... - tworzenie tymczasowej tabeli
@@ -252,7 +252,9 @@ where p.idpudelka not in (select z.idpudelka
 
 --i trzecia obcja ze strony Zaworskiego - uzycie join left and is null w where
 --robimy left joina wszystkich pudełek z pudełkami, w ktorych wystepują czekoladki z orzechami
---i poprzez dodanie w where warunku filtrujemy w taki sposob, by pozbyc sie tych pudełek
+--i poprzez dodanie w where warunku filtrujemy w taki sposob, by pozbyc sie tych pudełek\
+--MEGA WAZNE: zadzała tylko z on a.key=b.key bo tylko wtedy będą dublikaty kolumn z kluczem (nwm, u mnie dziala xD,
+    --ale gemini mowi ze nie bedzie)
 
 --pudełka left join pudełka z orzechami -> dostaniemy wszystkie pudełka, a w tych pudełkach gdzie
 -- nie ma orzechow w idpudełka bedzie null i wybieramy akurat takie id
@@ -358,3 +360,51 @@ where k.miejscowosc <> 'Katowice'
 group by k.idklienta, k.nazwa;
 
 --==============================================================
+
+--7 Napisz zapytanie w języku SQL wyświetlające imię, nazwisko, identyfikator drużyny, pozycję na boisku
+
+--7.1 i numer meczu dla zawodniczek, które zdobyły ponad 20 punktów i zostały MVP meczu,
+--siatkarki
+-- numer | iddruzyny | nazwisko | imie | pozycja
+-- join statystyki (idmeczu | gosp | goscie | numer | iddruzyny) using(numer, iddruzyny) -->
+-- numer | iddruzyny | nazwisko | imie | pozycja | idmeczu | gosp | goscie join punkty
+--join punkty (numer | iddruzyny | idmeczu | punky | asy | bloki ) -->
+--numer | iddruzyny | nazwisko | imie | pozycja | idmeczu | gosp | goscie | punky | asy | bloki
+select s.imie, s.nazwisko, s.iddruzyny, s.pozycja, st.idmeczu
+from siatkarki s join statystyki st using (numer, iddruzyny)
+                 join punkty p using (numer, iddruzyny, idmeczu) --dołaczamy punkty konkretnej zawodniczki w konkretnym meczu
+where punkty > 20;
+
+--7.2 liczbę zdobytych punktów, identyfikator meczu i informację,
+-- czy zawodniczka została MVP (kolumna z wartościami logicznymi), dla zawodniczek, które zdobyły ponad 20 punktów,
+select s.imie, s.nazwisko, s.iddruzyny, p.punkty, p.idmeczu,
+      (case when (st.numer is not null) then true else false end) isMVP
+from siatkarki s join punkty p using (numer, iddruzyny)
+                 left join statystyki st using (numer, iddruzyny, idmeczu)
+where p.punkty > 20
+order by p.idmeczu;
+
+--7.3  identyfikator meczu dla zawodniczek z Łodzi, które zostały MVP meczu,
+select s.imie, s.nazwisko, s.iddruzyny, s.pozycja, st.idmeczu
+from druzyny d join siatkarki s using(iddruzyny)
+               join statystyki st using(numer, iddruzyny)
+where d.miasto = 'Łódź';
+
+--7.4 i termin rozegrania meczu, dla zawodniczek, które zdobyły ponad 20 punktów i zostały MVP meczu,
+select s.imie, s.nazwisko, s.iddruzyny, s.pozycja,  m.termin
+from siatkarki s join statystyki st using (numer, iddruzyny) --zostały mvp
+                 join punkty p using (idmeczu, numer, iddruzyny) --dla sprawdzenia >20
+                 join mecze m using (idmeczu) --zeby dostac datę
+where p.punkty > 20;
+
+--7.5 i identyfikator meczu dla zawodniczek, które zostały MVP w fazie play off.
+select s.imie, s.nazwisko, s.iddruzyny, s.pozycja, m.idmeczu
+from siatkarki s join statystyki st using (numer, iddruzyny) --zostały mvp
+                 join mecze m using (idmeczu) --zeby dostac mecz
+                 join fazy f using (faza) --zeby dostac faze
+where f.opis not like '%kolejka%';
+
+--okropne...
+
+
+
