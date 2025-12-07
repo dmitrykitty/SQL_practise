@@ -38,7 +38,7 @@ set search_path to public, siatkowka;
 --REGEX(similar to 'pattern') % oraz _ tak samo jak dla like/ilike
 --[AB]ma -> Ama lub Bma
 --[a-z]ma -> myślnik oznacza zakres. Pasuje do "ama", "bma" ... aż do "zma".
---[^(0-9)]% -> dowolny ciag nie od liczb
+--[^(0-9)] -> dowolny ciag nie z liczb
 --ko?t -> kt lub kot (0 lub 1)
 --ko*t -> kt, kot, koot, ko...ot (0 lub wiecej)
 --ko+t -> kot, ko...ot (1 lub wiecej)
