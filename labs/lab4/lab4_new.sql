@@ -1,6 +1,18 @@
 set search_path to public, siatkowka;
 --====================THEORY====================
+--cross join (iloczyn kartezjanski)
 
+--a join b on a.key=bkey
+--a join b using(key)
+--a naturall join b
+
+--a left join b on a.key=b.key - wszystkie rekordy z lewej i tylko wybrane s prawej
+--a left join b on a.key=b.key where b.key is null - np klienci(a) ktore nigdy nie zlozyli zamowien(b)
+--a left join b on a.key=b.key AND b.key=... -mozna dodac warunek w on, to jest nie to samo, co where
+
+--with help as (select ...) select ... - tworzenie tymczasowej tabeli
+
+--==============================================================
 
 --1 Porównaj wyniki poniższych zapytań:
 SELECT k.nazwa
@@ -133,6 +145,216 @@ where cz.orzechy = 'migdały';
 
 --4 Napisz zapytanie w języku SQL wyświetlające informacje na temat pudełek i
 -- ich zawartości (nazwa pudełka, nazwa czekoladki, liczba sztuk):
-select p.nazwa nazwa_pudekla, cz.nazwa nazwa_czekoladki, z.sztuk
+
+--4.1 wszystkich pudełek,
+--mi sie wydaje, ze poprawniej édzie tu uzyc left joina, bo chce nawet dostac takie rekordy nazwa_pud | null | null
+select p.nazwa nazwa_pudekla, p.idpudelka,  cz.nazwa nazwa_czekoladki, z.sztuk
+from pudelka p left join zawartosc z on p.idpudelka = z.idpudelka
+               left join czekoladki cz on z.idczekoladki = cz.idczekoladki;
+
+--4.2 pudełka o wartości klucza głównego heav,
+--wazne rozumiec ze w wyniku beddzie nie jeden rekord, tylko tyle rekordow, ile jest czekoladek w wybranym pudełku
+select p.nazwa nazwa_pudekla, p.idpudelka, cz.nazwa nazwa_czekoladki, z.sztuk
+from pudelka p left join zawartosc z on p.idpudelka = z.idpudelka
+               left join czekoladki cz on z.idczekoladki = cz.idczekoladki
+where p.idpudelka = 'heav';
+
+--4.3 pudełek, których nazwa zawiera słowo Kolekcja.
+select p.nazwa nazwa_pudekla, p.idpudelka, cz.nazwa nazwa_czekoladki, z.sztuk
+from pudelka p left join zawartosc z on p.idpudelka = z.idpudelka
+               left join czekoladki cz on z.idczekoladki = cz.idczekoladki
+where p.nazwa like '%Kolekcja%';
+
+--==============================================================
+
+--5 Napisz zapytanie w języku SQL wyświetlające informacje na temat pudełek z czekoladkami
+--(idpudelka, nazwa, opis, cena), które (uwaga: może być konieczne użycie konstrukcji z poprzednich laboratoriów):
+
+--W wynikach nie powinno być duplikatów.
+--W każdym zapytaniu można dodać dodatkowe pola (poza danymi o pudełkach),
+--które pozwolą sprawdzić, czy wynik jest poprawny.
+
+--5.1 zawierają czekoladki o wartości klucza głównego d09
+select p.idpudelka, p.nazwa, p.opis, p.cena
 from pudelka p join zawartosc z on p.idpudelka = z.idpudelka
-               join czekoladki cz on z.idczekoladki = cz.idczekoladki;
+where z.idczekoladki = 'd09';
+
+--5.2 zawierają przynajmniej jedną czekoladkę, której nazwa zaczyna się na S,
+select distinct p.idpudelka, p.nazwa, p.opis, p.cena
+from pudelka p join zawartosc z on p.idpudelka = z.idpudelka
+               join czekoladki cz on z.idczekoladki = cz.idczekoladki
+where cz.nazwa like 'S%';
+
+--ale jak dodamy kolumnę czekoldki, trzeba wskazac według ktorej kolumny będzie distinct
+select distinct on (p.idpudelka, p.nazwa, p.opis, p.cena) p.idpudelka, p.nazwa, p.opis, p.cena, cz.nazwa
+from pudelka p join zawartosc z on p.idpudelka = z.idpudelka
+               join czekoladki cz on z.idczekoladki = cz.idczekoladki
+where cz.nazwa like 'S%';
+
+--5.3 zawierają przynajmniej 4 sztuki czekoladek jednego gatunku (o takim samym kluczu głównym),
+--tutaj to samo, co ostantio - jak dodam z.sztuk - będę musiał wskazac distinct on
+select distinct p.idpudelka, p.nazwa, p.opis, p.cena
+from pudelka p join zawartosc z on p.idpudelka = z.idpudelka
+where sztuk >= 4;
+
+--5.4 zawierają czekoladki z nadzieniem truskawkowym,
+select distinct p.idpudelka, p.nazwa, p.opis, p.cena
+from pudelka p join zawartosc z on p.idpudelka = z.idpudelka
+               join czekoladki cz on z.idczekoladki = cz.idczekoladki
+where cz.nadzienie = 'truskawki';
+
+--5.5 nie zawierają czekoladek w gorzkiej czekoladzie,
+--tutaj wazne ze jak damy czekoada <> 'gorzka' dostaniemy pudełka, w ktorych mogą byc czekoladki gorzkie,
+--ale co najmniej jedna nie będzie
+--wiec trzeba zastosowac exceptu czy czegos innego (pudekła - pudełka z czekolodami gorzkimi)
+select p.idpudelka, p.nazwa, p.opis, p.cena
+from pudelka p
+except
+select distinct p.idpudelka, p.nazwa, p.opis, p.cena
+from pudelka p join zawartosc z on p.idpudelka = z.idpudelka
+               join czekoladki cz on z.idczekoladki = cz.idczekoladki
+where cz.czekolada = 'gorzka';
+
+--inne rozwiazanie, nawet szybsze od popszedniego
+--wazne, do in mozemy przekazywac select tylko z jedna kolumną!!!
+select p.idpudelka, p.nazwa, p.opis, p.cena
+from pudelka p
+where p.idpudelka not in (select z.idpudelka
+                          from zawartosc z join czekoladki cz on z.idczekoladki = cz.idczekoladki
+                          where cz.czekolada = 'gorzka'
+                          );
+
+
+--5.6 zawierają co najmniej 3 sztuki czekoladki Gorzka truskawkowa,
+--chyba tu przejdzie bez d
+select p.idpudelka, p.nazwa, p.opis, p.cena
+from pudelka p join zawartosc z on p.idpudelka = z.idpudelka
+               join czekoladki cz on z.idczekoladki = cz.idczekoladki
+where cz.nazwa = 'Gorzka truskawkowa' and z.sztuk >= 3;
+
+--5.7 nie zawierają czekoladek z orzechami, (tak samo jak w zadaniu 5.5 uzywajac except)
+--nawet nie trzeba dawac distinct, bo union, except,intersect usuwaja dublicaty
+select p.idpudelka, p.nazwa, p.opis, p.cena
+from pudelka p
+except
+select p.idpudelka, p.nazwa, p.opis, p.cena
+from pudelka p join zawartosc z on p.idpudelka = z.idpudelka
+               join czekoladki cz on z.idczekoladki = cz.idczekoladki
+where cz.orzechy is not null;
+
+
+select p.idpudelka, p.nazwa, p.opis, p.cena
+from pudelka p
+where p.idpudelka not in (select z.idpudelka
+                          from zawartosc z join czekoladki cz on z.idczekoladki = cz.idczekoladki
+                          where cz.orzechy is not null
+                          );
+
+--i trzecia obcja ze strony Zaworskiego - uzycie join left and is null w where
+--robimy left joina wszystkich pudełek z pudełkami, w ktorych wystepują czekoladki z orzechami
+--i poprzez dodanie w where warunku filtrujemy w taki sposob, by pozbyc sie tych pudełek
+
+--pudełka left join pudełka z orzechami -> dostaniemy wszystkie pudełka, a w tych pudełkach gdzie
+-- nie ma orzechow w idpudełka bedzie null i wybieramy akurat takie id
+SELECT *
+FROM
+    pudelka p
+        LEFT JOIN (
+        SELECT z.idpudelka
+        FROM
+            zawartosc z
+                JOIN czekoladki cz ON z.idczekoladki = cz.idczekoladki
+        WHERE cz.orzechy IS NOT NULL
+    ) j ON p.idpudelka = j.idpudelka
+WHERE j.idpudelka IS NULL;
+
+--5.8 zawierają czekoladki Gorzka truskawkowa,
+select distinct p.idpudelka, p.nazwa, p.opis, p.cena
+from pudelka p join zawartosc z on p.idpudelka = z.idpudelka
+               join czekoladki cz on z.idczekoladki = cz.idczekoladki
+where cz.nazwa = 'Gorzka truskawkowa';
+
+--5.9 zawierają przynajmniej jedną czekoladkę bez nadzienia.
+select distinct p.idpudelka, p.nazwa, p.opis, p.cena
+from pudelka p join zawartosc z on p.idpudelka = z.idpudelka
+               join czekoladki cz on z.idczekoladki = cz.idczekoladki
+where cz.nadzienie is null;
+
+--==============================================================
+
+--6 Napisz poniższe zapytania w języku SQL:
+--Uwaga: w powyższych zapytaniach można użyć samozłączeń (złączeń własnych).
+--Wskazówka: Zapytanie w punkcie 2 można znacznie uprościć stosując konstrukcję z WITH.
+
+--6.1 Wyświetl wartości kluczy głównych oraz nazwy czekoladek,
+-- których koszt jest większy od kosztu czekoladki o wartości klucza głównego równej d08.
+with czekoladka_d08 as (
+    select koszt
+    from czekoladki
+    where idczekoladki = 'd08'
+)
+select idczekoladki, nazwa
+from czekoladki
+where koszt > (select * from czekoladka_d08);
+
+--lub bez with
+select idczekoladki, nazwa
+from czekoladki
+where koszt > (select koszt
+               from czekoladki
+               where idczekoladki = 'd08');
+
+--6.2 Kto (identyfikator klienta, nazwa klienta) złożył zamówienie na dowolne pudełko, które zamawiała Górka Alicja.
+with pudełka_alicji as (
+    select a.idpudelka
+    from klienci k join zamowienia z using (idklienta)
+                   join artykuly a using (idzamowienia)
+    where k.nazwa = 'Górka Alicja'
+)
+select distinct k.idklienta, k.nazwa
+from klienci k join zamowienia z using (idklienta)
+               join artykuly a using (idzamowienia)
+where a.idpudelka in (select * from pudełka_alicji) and k.nazwa <> 'Górka Alicja'; --trzeba wykluczyc samą alicje
+
+--troche inaczej napisana druga czesc zapytania
+with pudełka_alicji as (
+    select a.idpudelka
+    from klienci k join zamowienia z using (idklienta)
+                   join artykuly a using (idzamowienia)
+    where k.nazwa = 'Górka Alicja'
+)
+select distinct k.idklienta, k.nazwa
+from klienci k join zamowienia z using (idklienta)
+               join artykuly a using (idzamowienia)
+               join pudełka_alicji pa using (idpudelka)
+where k.nazwa <> 'Górka Alicja'; --trzeba wykluczyc samą alicje
+
+--6.3 Kto (identyfikator klienta, nazwa klienta)
+-- złożył zamówienie na dowolne pudełko, które zamawiali klienci z Katowic.
+with pudełka_z_katowic as (select a.idpudelka
+                           from klienci k
+                                    join zamowienia z using (idklienta)
+                                    join artykuly a using (idzamowienia)
+                           where k.miejscowosc = 'Katowice'
+                           )
+select distinct k.idklienta, k.nazwa
+from klienci k join zamowienia z using (idklienta)
+               join artykuly a using (idzamowienia)
+               join pudełka_z_katowic pa using (idpudelka)
+where k.miejscowosc <> 'Katowice';
+
+--lub zamiast distinct mozna uzyc grupowania (do zadanie 6.2 tez)
+with pudełka_z_katowic as (select a.idpudelka
+                           from klienci k
+                                    join zamowienia z using (idklienta)
+                                    join artykuly a using (idzamowienia)
+                           where k.miejscowosc = 'Katowice'
+)
+select k.idklienta, k.nazwa
+from klienci k join zamowienia z using (idklienta)
+               join artykuly a using (idzamowienia)
+               join pudełka_z_katowic pa using (idpudelka)
+where k.miejscowosc <> 'Katowice'
+group by k.idklienta, k.nazwa;
+
+--==============================================================

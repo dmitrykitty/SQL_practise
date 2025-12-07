@@ -5,7 +5,7 @@ from druzyny
          natural join siatkarki
          natural join punkty;
 -- dolaczaja sie kolumny unikatowe wsrod dwoch tabel pod
--- warunkiem, ze jest 1 lub wiecej atrybut wspolny np. zamowienia.idklienta = klienci=idklienta
+-- warunkiem, ze jest 1 lub wiecej atrybut wspolny np. zamowienia.idklienta = klienci.idklienta
 
 select nazwisko, imie, termin, punkty
 from siatkarki

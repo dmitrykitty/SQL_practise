@@ -6,7 +6,7 @@ set search_path to public, siatkowka;
 --now() -> data + czas
 
 --date_part('year/month/day/hours/week/doy/dow...', termin) - wyciąga cześc daty/czasu
--- (doy - day of year, dow-day of week)
+--(doy - day of year, dow-day of week)
 --dla SQL extract(jednostka from termin)
 
 -- data + INTERVAL 'ilość jednostka' -> dodawanie/odejmowanie czasu
@@ -25,7 +25,7 @@ set search_path to public, siatkowka;
 -- Przykład: age('2025-01-01', '2020-01-01') -> zwróci '5 years'
 
 -- ZAOKRĄGLANIE DATY (DATE_TRUNC)
--- date_trunc('jednostka', data) -> "obcina" datę do początku podanej jednostki (zeruje mniejsze części)
+-- date_trunc('jednostka', data) -> "obcina" datę do początku podanej jednostki (zeruje mniejsze jednostki)
 -- Przykład: date_trunc('month', now()) -> zwraca pierwszy dzień bieżącego miesiąca o 00:00
 -- Przykład: date_trunc('year', now()) -> zwraca 1 stycznia bieżącego rok
 
@@ -45,6 +45,7 @@ set search_path to public, siatkowka;
 --a{n} -> a powtorzone n razy
 --a{n,} -> a powtorzone n lub wiecej razy
 --a{n,m} -> a powtorzone od n do m razy
+--(Aba|Bab)a -> Abaa lub Baba
 
 --------------------------------------------------------------------
 --union, intersect, except wymaga jednakowej ilosci kolumn w podzapytaniach
@@ -452,4 +453,4 @@ where case when (goscie[1] < gospodarze[1]) then 1 else 0 end +
       case when (goscie[4] < gospodarze[4]) then 1 else 0 end +
       case when (goscie[5] < gospodarze[5]) then 1 else 0 end >= 3;
 
---ostatnie dwa juzmi sie nie chce robic. Idziemy do joinow!!!
+--ostatnie dwa juz mi sie nie chce robic. Idziemy do joinow!!!
