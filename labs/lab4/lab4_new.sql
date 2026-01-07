@@ -4,7 +4,7 @@ set search_path to public, siatkowka;
 
 --a join b on a.key=bkey --> w wyniku będzie dwie jednakowe kolumny z kluczami |a.key | b.key|
 --a join b using(key) --> będzie jedna kolumna |key|
---a naturall join b --> tutaj tez w wyniku tylko jedna bez dublowania
+--a natural join b --> tutaj tez w wyniku tylko jedna bez dublowania
 
 --a left join b on a.key=b.key - wszystkie rekordy z lewej i tylko wybrane s prawej
 --a left join b on a.key=b.key where b.key is null - np klienci(a) ktore nigdy nie zlozyli zamowien(b) ANTIJOIN

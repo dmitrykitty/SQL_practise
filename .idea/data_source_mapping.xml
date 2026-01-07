@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourcePerFileMappings">
+    <file url="file://$PROJECT_DIR$/kolokwiums/catering/kolokwium_2022_2023_baza.sql" value="35f12f11-934b-4776-aafc-a42b965e118d" />
+    <file url="file://$PROJECT_DIR$/kolokwiums/catering/solutions.sql" value="35f12f11-934b-4776-aafc-a42b965e118d" />
     <file url="file://$PROJECT_DIR$/labs/lab1/lab1_new.sql" value="5ecd9eb8-b41f-4274-a802-6d3212c54247" />
+    <file url="file://$PROJECT_DIR$/labs/lab10/lab10.sql" value="5ecd9eb8-b41f-4274-a802-6d3212c54247" />
     <file url="file://$PROJECT_DIR$/labs/lab2/lab2_new.sql" value="5ecd9eb8-b41f-4274-a802-6d3212c54247" />
     <file url="file://$PROJECT_DIR$/labs/lab3/lab3_new.sql" value="5ecd9eb8-b41f-4274-a802-6d3212c54247" />
     <file url="file://$PROJECT_DIR$/labs/lab4/lab4_new.sql" value="5ecd9eb8-b41f-4274-a802-6d3212c54247" />
+    <file url="file://$PROJECT_DIR$/labs/lab5/lab5_new.sql" value="5ecd9eb8-b41f-4274-a802-6d3212c54247" />
   </component>
 </project>
