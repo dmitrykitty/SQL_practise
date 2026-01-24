@@ -310,3 +310,16 @@ VALUES (27, '2026-01-20', 2500.00), -- Kierownik PH101
        (85, '2026-01-23', 1700.00), -- Manager
        (98, '2026-01-23', 1200.00), -- Rekruterka
        (99, '2026-01-24', 1200.00); -- Rekruterka
+
+
+--ZADANIE 5 Do bazy danych dodaj:
+-- 1 Widok udostępniający jednocześnie dane nadawcy, odbiorcy oraz identyfikator i nazwę kompozycji oraz uwagi do zamówienia.
+create view zamowienie_info as
+select o.idodbiorcy, o.nazwa nazwa_odbiorcy, z.idzamowienia, k.idkompozycji, k.nazwa nazwa_kompozycji
+from kompozycje k
+         join zamowienia z on k.idkompozycji = z.idkompozycji
+         join odbiorcy o on o.idodbiorcy = z.idobiorcy
+order by o.idodbiorcy;
+
+select *
+from zamowienie_info;
