@@ -15,8 +15,40 @@ create or replace function uzupelnij_playliste(idplaylisty_od int, idplaylisty_d
             )
 as
 $$
+declare
+    id_owner int;
+    row      record;
 begin
+    select idklienta
+    into id_owner
+    from playlisty
+    where idplaylisty = idplaylisty_od;
 
+    for row in (select z_od.idutworu
+                from zawartosc z_od
+                where idplaylisty = idplaylisty_od
+                  and idutworu not in (select idutworu
+                                       from zawartosc
+                                       where idplaylisty = idplaylisty_do))
+        loop
+            insert into zawartosc
+            values (idplaylisty_do, row.idutworu);
+
+            if polub = true and not exists(select 1
+                                           from oceny
+                                           where idutworu = row.idutworu
+                                             and idklienta = id_owner) then
+                insert into oceny(idutworu, idklienta, lubi)
+                values (row.idutworu, id_owner, true);
+
+            end if;
+        end loop;
+
+    return query
+        select utwory.*
+        from zawartosc z
+                 join utwory using (idutworu)
+        where z.idplaylisty = idplaylisty_do;
 end;
 $$
     language plpgsql;
