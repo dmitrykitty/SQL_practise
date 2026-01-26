@@ -18,7 +18,8 @@ set search_path to test1;
 
 create table kompozycje
 (
-    idkompozycji varchar(4) primary key,
+    idkompozycji varchar(4) primary key
+        constraint fk_dd references sss,
     nazwa        varchar(20) unique not null,           --not null nie moze miec przypisanej nazwy
     cena         numeric(7, 2)
         constraint min_cena check (cena >= 40.00),
@@ -69,6 +70,9 @@ alter table pracowniki
 --dodawanie FK
 alter table pracowniki
     add foreign key (plec_pracownika) references kompozycje (nazwa);
+
+alter table pracowniki
+    drop constraint pracowniki_plec_pracownika_fkey;
 
 --usuwanie constraintow
 --na poziomie tabeli
@@ -145,14 +149,17 @@ CREATE TABLE odbiorcy
 
 create table zamowienia
 (
-    idzamowienia int primary key,
+    idzamowienia int primary key
+        constraint fk_key references klienci (idklienta),
     idklienta    varchar(10) not null references klienci (idklienta),
     idobiorcy    int         not null references odbiorcy (idodbiorcy),
     idkompozycji char(5)     not null references kompozycje (idkompozycji),
     termin       date        not null,
     cena         numeric(12, 2),
     zaplacone    boolean,
-    uwagi        varchar(200)
+    uwagi        varchar(200),
+    constraint name_c foreign key (idkompozycji) references klienci (idklienta),
+    constraint double_primary_key primary key (idkompozycji, termin)
 );
 
 create table historia

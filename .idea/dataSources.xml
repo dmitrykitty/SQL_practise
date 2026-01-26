@@ -37,11 +37,11 @@
       </jdbc-additional-properties>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
-    <data-source source="LOCAL" name="dnikitin@lab.kis.agh.edu.pl2" uuid="35f12f11-934b-4776-aafc-a42b965e118d">
+    <data-source source="LOCAL" name="kolokwium2@localhost" uuid="babb535c-e210-4b7d-8958-0718b883c1bc">
       <driver-ref>postgresql</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.postgresql.Driver</jdbc-driver>
-      <jdbc-url>jdbc:postgresql://lab.kis.agh.edu.pl:1500/dnikitin</jdbc-url>
+      <jdbc-url>jdbc:postgresql://localhost:5432/kolokwium</jdbc-url>
       <jdbc-additional-properties>
         <property name="com.intellij.clouds.kubernetes.db.host.port" />
         <property name="com.intellij.clouds.kubernetes.db.enabled" value="false" />

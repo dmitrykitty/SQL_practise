@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourcePerFileMappings">
-    <file url="file://$PROJECT_DIR$/kolokwiums/catering/kolokwium_2022_2023_baza.sql" value="35f12f11-934b-4776-aafc-a42b965e118d" />
-    <file url="file://$PROJECT_DIR$/kolokwiums/catering/solutions.sql" value="35f12f11-934b-4776-aafc-a42b965e118d" />
+    <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/5757c0ef-0ffc-419a-96b1-ed812047bf18/console.sql" value="5757c0ef-0ffc-419a-96b1-ed812047bf18" />
+    <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/babb535c-e210-4b7d-8958-0718b883c1bc/console.sql" value="babb535c-e210-4b7d-8958-0718b883c1bc" />
+    <file url="file://$PROJECT_DIR$/kolokwiums/drugi/kolokwium_2021_2022_baza (1).sql" value="babb535c-e210-4b7d-8958-0718b883c1bc" />
+    <file url="file://$PROJECT_DIR$/kolokwiums/drugi/kolokwium_2022_2023_baza.sql" value="babb535c-e210-4b7d-8958-0718b883c1bc" />
     <file url="file://$PROJECT_DIR$/kolokwiums/drugi/task3.sql" value="5ecd9eb8-b41f-4274-a802-6d3212c54247" />
+    <file url="file://$PROJECT_DIR$/kolokwiums/drugi/task5-2021.sql" value="babb535c-e210-4b7d-8958-0718b883c1bc" />
+    <file url="file://$PROJECT_DIR$/kolokwiums/drugi/task5-2022.sql" value="babb535c-e210-4b7d-8958-0718b883c1bc" />
+    <file url="file://$PROJECT_DIR$/kolokwiums/drugi/task5-2023.sql" value="babb535c-e210-4b7d-8958-0718b883c1bc" />
     <file url="file://$PROJECT_DIR$/labs/lab1/lab1_new.sql" value="5ecd9eb8-b41f-4274-a802-6d3212c54247" />
     <file url="file://$PROJECT_DIR$/labs/lab10/lab10.sql" value="5ecd9eb8-b41f-4274-a802-6d3212c54247" />
+    <file url="file://$PROJECT_DIR$/labs/lab11/lab11.sql" value="5ecd9eb8-b41f-4274-a802-6d3212c54247" />
     <file url="file://$PROJECT_DIR$/labs/lab2/lab2_new.sql" value="5ecd9eb8-b41f-4274-a802-6d3212c54247" />
     <file url="file://$PROJECT_DIR$/labs/lab3/lab3_new.sql" value="5ecd9eb8-b41f-4274-a802-6d3212c54247" />
     <file url="file://$PROJECT_DIR$/labs/lab4/lab4_new.sql" value="5ecd9eb8-b41f-4274-a802-6d3212c54247" />
